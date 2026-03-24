@@ -1,15 +1,21 @@
 {
-  "name": "Tower Defense",
-  "short_name": "TD",
-  "description": "Jogo Tower Defense",
-  "start_url": ".",
+  "name": "Fernanda Towers",
+  "short_name": "FernandaTowers",
+  "description": "Proteja o Cinema Brasileiro",
+  "start_url": "./",
   "display": "standalone",
-  "background_color": "#EBEBEB",
-  "theme_color": "#E8440A",
+  "background_color": "#0A0908",
+  "theme_color": "#0A0908",
+  "orientation": "any",
   "icons": [
     {
-      "src": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==",
-      "sizes": "192x192",
+      "src": "icon.png",
+      "sizes": "384x384",
+      "type": "image/png"
+    },
+    {
+      "src": "icon.png",
+      "sizes": "512x512",
       "type": "image/png"
     }
   ]
