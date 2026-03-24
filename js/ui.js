@@ -1,99 +1,244 @@
+function _toConsumableArray(r) { return _arrayWithoutHoles(r) || _iterableToArray(r) || _unsupportedIterableToArray(r) || _nonIterableSpread(); }
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0; } }
+function _iterableToArray(r) { if ("undefined" != typeof Symbol && null != r[Symbol.iterator] || null != r["@@iterator"]) return Array.from(r); }
+function _arrayWithoutHoles(r) { if (Array.isArray(r)) return _arrayLikeToArray(r); }
+function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
 // === ui.js — buildMapSelect(), initGame(), event listeners, UI ===
 
-function buildMapSelect(){
-  var grid=document.getElementById('ms-grid');
-  grid.innerHTML='';
-  MAPS.forEach(function(m,idx){
-    var card=document.createElement('div');
-    card.className='ms-card';
-    card.dataset.map=idx;
-    var res=getResult(idx);
-    var bossTag=m.hasBoss?'<div class="ms-card-boss">&#9889; BOSS</div>':'';
-    var recTag=res.score?'<div style="font-size:7px;letter-spacing:.14em;color:#4A4438;margin-top:2px;">&#9670; RECORDE '+res.score+'</div>':'';
-    card.innerHTML=(
-      '<div style="display:flex;justify-content:space-between;align-items:center;">'+
-        '<div class="ms-card-num">'+m.num+'</div>'+
-        '<div>'+starsHtml(res.stars||0,12)+'</div>'+
-      '</div>'+
-      '<canvas id="prev-'+idx+'" width="148" height="83"></canvas>'+
-      '<div class="ms-card-name">'+m.name+'</div>'+
-      '<div class="ms-card-desc">'+m.ceremony+'<br>'+m.desc+'</div>'+
-      '<div style="display:flex;gap:6px;flex-wrap:wrap;">'+
-        '<div class="ms-card-tag">'+m.tag+'</div>'+bossTag+
-      '</div>'+recTag
-    );
-    card.addEventListener('click',function(){ startGame(+card.dataset.map); });
-    card.addEventListener('touchstart',function(e){ e.preventDefault(); startGame(+card.dataset.map); },{passive:false});
+function buildMapSelect() {
+  var grid = document.getElementById('ms-grid');
+  grid.innerHTML = '';
+  MAPS.forEach(function (m, idx) {
+    var card = document.createElement('div');
+    card.className = 'ms-card';
+    card.dataset.map = idx;
+    var res = getResult(idx);
+    var bossTag = m.hasBoss ? '<div class="ms-card-boss">&#9889; BOSS</div>' : '';
+    var recTag = res.score ? '<div style="font-size:7px;letter-spacing:.14em;color:#4A4438;margin-top:2px;">&#9670; RECORDE ' + res.score + '</div>' : '';
+    card.innerHTML = '<div style="display:flex;justify-content:space-between;align-items:center;">' + '<div class="ms-card-num">' + m.num + '</div>' + '<div>' + starsHtml(res.stars || 0, 12) + '</div>' + '</div>' + '<canvas id="prev-' + idx + '" width="148" height="83"></canvas>' + '<div class="ms-card-name">' + m.name + '</div>' + '<div class="ms-card-desc">' + m.ceremony + '<br>' + m.desc + '</div>' + '<div style="display:flex;gap:6px;flex-wrap:wrap;">' + '<div class="ms-card-tag">' + m.tag + '</div>' + bossTag + '</div>' + recTag;
+    card.addEventListener('click', function () {
+      startGame(+card.dataset.map);
+    });
+    card.addEventListener('touchstart', function (e) {
+      e.preventDefault();
+      startGame(+card.dataset.map);
+    }, {
+      passive: false
+    });
     grid.appendChild(card);
   });
-  MAPS.forEach(function(m,idx){ drawMapPreview(idx,'prev-'+idx); });
+  MAPS.forEach(function (m, idx) {
+    drawMapPreview(idx, 'prev-' + idx);
+  });
 }
-
-document.getElementById('btn-splash').addEventListener('click',()=>{document.getElementById('splash').style.display='none';document.getElementById('map-select').style.display='flex';buildMapSelect();});
-
-function backToMaps(){stopMusic();currentTheme=-1;document.querySelectorAll('[style*="z-index:50"]').forEach(e=>e.remove());document.getElementById('game').style.display='none';document.getElementById('map-select').style.display='flex';towers.length=0;enemies.length=0;splash.length=0;projs.forEach(p=>p.active=false);var sg=MAPOBJ.startGold||200;Object.assign(S,{gold:sg,lives:20,score:0,waveIdx:-1,waveActive:false,buildPhase:true,selType:'sonia',gameOver:false,selTower:null});bossEnemy=null;hideBossHpBar();buildMapSelect();}
-document.getElementById('btn-back').addEventListener('click',backToMaps);
-
-function startGame(mapIdx){CURMAP=mapIdx;MAPOBJ=MAPS[mapIdx];MAP=MAPOBJ.grid;ROWS=MAP.length;COLS=MAP[0].length;WP=MAPOBJ.wp;WAVES=MAPOBJ.waves;towers.length=0;enemies.length=0;splash.length=0;projs.forEach(p=>p.active=false);queue.length=0;wt=0;qc=0;btimer=0;var sg=MAPOBJ.startGold||200;Object.assign(S,{gold:sg,lives:20,score:0,waveIdx:-1,waveActive:false,buildPhase:true,selType:'sonia',gameOver:false,selTower:null});bossEnemy=null;document.getElementById('map-select').style.display='none';document.getElementById('game').style.display='block';resize();updateBasePos();drawIcons();hud();playTheme(CURMAP);setStatus('campanha — posicione torres, depois [espaço] para iniciar');setPhase('FASE DE CAMPANHA');lt=0;
+document.getElementById('btn-splash').addEventListener('click', function () {
+  document.getElementById('splash').style.display = 'none';
+  document.getElementById('map-select').style.display = 'flex';
+  buildMapSelect();
+});
+function backToMaps() {
+  stopMusic();
+  currentTheme = -1;
+  document.querySelectorAll('[style*="z-index:50"]').forEach(function (e) {
+    return e.remove();
+  });
+  document.getElementById('game').style.display = 'none';
+  document.getElementById('map-select').style.display = 'flex';
+  towers.length = 0;
+  enemies.length = 0;
+  splash.length = 0;
+  projs.forEach(function (p) {
+    return p.active = false;
+  });
+  var sg = MAPOBJ.startGold || 200;
+  Object.assign(S, {
+    gold: sg,
+    lives: 20,
+    score: 0,
+    waveIdx: -1,
+    waveActive: false,
+    buildPhase: true,
+    selType: 'sonia',
+    gameOver: false,
+    selTower: null
+  });
+  bossEnemy = null;
+  hideBossHpBar();
+  buildMapSelect();
+}
+document.getElementById('btn-back').addEventListener('click', backToMaps);
+function startGame(mapIdx) {
+  CURMAP = mapIdx;
+  MAPOBJ = MAPS[mapIdx];
+  MAP = MAPOBJ.grid;
+  ROWS = MAP.length;
+  COLS = MAP[0].length;
+  WP = MAPOBJ.wp;
+  WAVES = MAPOBJ.waves;
+  towers.length = 0;
+  enemies.length = 0;
+  splash.length = 0;
+  projs.forEach(function (p) {
+    return p.active = false;
+  });
+  queue.length = 0;
+  wt = 0;
+  qc = 0;
+  btimer = 0;
+  var sg = MAPOBJ.startGold || 200;
+  Object.assign(S, {
+    gold: sg,
+    lives: 20,
+    score: 0,
+    waveIdx: -1,
+    waveActive: false,
+    buildPhase: true,
+    selType: 'sonia',
+    gameOver: false,
+    selTower: null
+  });
+  bossEnemy = null;
+  document.getElementById('map-select').style.display = 'none';
+  document.getElementById('game').style.display = 'block';
+  resize();
+  updateBasePos();
+  drawIcons();
+  hud();
+  playTheme(CURMAP);
+  setStatus('campanha — posicione torres, depois [espaço] para iniciar');
+  setPhase('FASE DE CAMPANHA');
+  lt = 0;
   // Show tutorial on first play
   if (!window._tutorialSeen) {
     window._tutorialSeen = true;
     // pause the loop until tutorial done
     S._paused = true;
-    showTutorial(() => { S._paused = false; });
+    showTutorial(function () {
+      S._paused = false;
+    });
   }
   // Ensure portrait renders on base tile
-  const _img=document.getElementById('_fernanda_portrait');
-  if(_img&&!_img.complete){_img.onload=()=>rebuildOff();}else{setTimeout(rebuildOff,50);}
-  requestAnimationFrame(loop);}
-
-let lt=0,fc=0,ft=0;
-function loop(ts){
-  const dt=Math.min((ts-lt)/1000,.05);lt=ts;fc++;ft+=dt;
-  if(ft>=.5){document.getElementById('s-fps').textContent=Math.round(fc/ft);document.getElementById('s-ent').textContent=enemies.filter(e=>e.active).length+towers.length+projs.filter(p=>p.active).length;fc=0;ft=0;}
-  if(!S.gameOver && !S._paused){tickBuild(dt);tickSpawner(dt);updEnemies(dt);updTowers(dt);updProjs(dt);}
-  cx.clearRect(0,0,W,H);if(off)cx.drawImage(off,0,0);
-  const items=[...towers.map(t=>({z:t.row+t.col+.1,fn:()=>drawTower(t)})),...enemies.filter(e=>e.active).map(e=>{const rr=s2t(e.x,e.y);return{z:(isNaN(rr.row)?0:rr.row+rr.col)+.5,fn:()=>drawEnemy(e)};})];
-  items.sort((a,b)=>a.z-b.z).forEach(i=>i.fn());
-  projs.forEach(p=>p.active&&drawProj(p));updSplash(dt);drawHov();
-  if(document.getElementById('game').style.display==='block')requestAnimationFrame(loop);
+  var _img = document.getElementById('_fernanda_portrait');
+  if (_img && !_img.complete) {
+    _img.onload = function () {
+      return rebuildOff();
+    };
+  } else {
+    setTimeout(rebuildOff, 50);
+  }
+  requestAnimationFrame(loop);
 }
-
+var lt = 0,
+  fc = 0,
+  ft = 0;
+function loop(ts) {
+  var dt = Math.min((ts - lt) / 1000, .05);
+  lt = ts;
+  fc++;
+  ft += dt;
+  if (ft >= .5) {
+    document.getElementById('s-fps').textContent = Math.round(fc / ft);
+    document.getElementById('s-ent').textContent = enemies.filter(function (e) {
+      return e.active;
+    }).length + towers.length + projs.filter(function (p) {
+      return p.active;
+    }).length;
+    fc = 0;
+    ft = 0;
+  }
+  if (!S.gameOver && !S._paused) {
+    tickBuild(dt);
+    tickSpawner(dt);
+    updEnemies(dt);
+    updTowers(dt);
+    updProjs(dt);
+  }
+  cx.clearRect(0, 0, W, H);
+  if (off) cx.drawImage(off, 0, 0);
+  var items = [].concat(_toConsumableArray(towers.map(function (t) {
+    return {
+      z: t.row + t.col + .1,
+      fn: function fn() {
+        return drawTower(t);
+      }
+    };
+  })), _toConsumableArray(enemies.filter(function (e) {
+    return e.active;
+  }).map(function (e) {
+    var rr = s2t(e.x, e.y);
+    return {
+      z: (isNaN(rr.row) ? 0 : rr.row + rr.col) + .5,
+      fn: function fn() {
+        return drawEnemy(e);
+      }
+    };
+  })));
+  items.sort(function (a, b) {
+    return a.z - b.z;
+  }).forEach(function (i) {
+    return i.fn();
+  });
+  projs.forEach(function (p) {
+    return p.active && drawProj(p);
+  });
+  updSplash(dt);
+  drawHov();
+  if (document.getElementById('game').style.display === 'block') requestAnimationFrame(loop);
+}
 
 // STARS
-function calcStars(lives){return lives>=16?3:lives>=9?2:lives>=1?1:0;}
-function saveResult(mapIdx,score,lives){
-  try{
-    var key='ft_map_'+mapIdx,prev=JSON.parse(localStorage.getItem(key)||'{}');
-    var stars=calcStars(lives);
-    localStorage.setItem(key,JSON.stringify({score:Math.max(score,prev.score||0),stars:Math.max(stars,prev.stars||0)}));
-    return stars;
-  }catch(e){return calcStars(lives);}
+function calcStars(lives) {
+  return lives >= 16 ? 3 : lives >= 9 ? 2 : lives >= 1 ? 1 : 0;
 }
-function getResult(mapIdx){try{return JSON.parse(localStorage.getItem('ft_map_'+mapIdx)||'{}');}catch(e){return {};}}
-function starsHtml(n,sz){
-  sz=sz||14; var out='';
-  for(var i=1;i<=3;i++) out+='<span style="font-size:'+sz+'px;color:'+(i<=n?'#D4A017':'#2A2820')+';text-shadow:'+(i<=n?'0 0 5px rgba(212,160,23,.5)':'none')+'">★</span>';
+function saveResult(mapIdx, score, lives) {
+  try {
+    var key = 'ft_map_' + mapIdx,
+      prev = JSON.parse(localStorage.getItem(key) || '{}');
+    var stars = calcStars(lives);
+    localStorage.setItem(key, JSON.stringify({
+      score: Math.max(score, prev.score || 0),
+      stars: Math.max(stars, prev.stars || 0)
+    }));
+    return stars;
+  } catch (e) {
+    return calcStars(lives);
+  }
+}
+function getResult(mapIdx) {
+  try {
+    return JSON.parse(localStorage.getItem('ft_map_' + mapIdx) || '{}');
+  } catch (e) {
+    return {};
+  }
+}
+function starsHtml(n, sz) {
+  sz = sz || 14;
+  var out = '';
+  for (var i = 1; i <= 3; i++) out += '<span style="font-size:' + sz + 'px;color:' + (i <= n ? '#D4A017' : '#2A2820') + ';text-shadow:' + (i <= n ? '0 0 5px rgba(212,160,23,.5)' : 'none') + '">★</span>';
   return out;
 }
 
 // MUSIC
 
-
 // ─── PORTRAIT CANVAS (splash) ───────────────────────────
-(function() {
-  const canvas = document.getElementById('sp-portrait');
+(function () {
+  var canvas = document.getElementById('sp-portrait');
   if (!canvas) return;
-  const ctx = canvas.getContext('2d');
-  const img = new Image();
-  img.onload = function() {
-    ctx.clearRect(0,0,120,120);
+  var ctx = canvas.getContext('2d');
+  var img = new Image();
+  img.onload = function () {
+    ctx.clearRect(0, 0, 120, 120);
     // Crop: face region — image is landscape, face centered
-    const iw = img.naturalWidth, ih = img.naturalHeight;
-    const sx = iw * 0.30, sy = ih * 0.04, sw = iw * 0.40, sh = ih * 0.70;
+    var iw = img.naturalWidth,
+      ih = img.naturalHeight;
+    var sx = iw * 0.30,
+      sy = ih * 0.04,
+      sw = iw * 0.40,
+      sh = ih * 0.70;
     ctx.save();
     ctx.beginPath();
-    ctx.arc(60,60,60,0,Math.PI*2);
+    ctx.arc(60, 60, 60, 0, Math.PI * 2);
     ctx.clip();
     ctx.drawImage(img, sx, sy, sw, sh, 0, 0, 120, 120);
     ctx.restore();
@@ -102,51 +247,67 @@ function starsHtml(n,sz){
 })();
 
 // ─── TUTORIAL OVERLAY ────────────────────────────────────
-function showTutorial(onDone){
-  var el=document.createElement("div");
-  el.id="tutorial-overlay";
-  el.style.cssText="position:fixed;inset:0;z-index:60;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(8,7,6,0.93);font-family:'Courier Prime',monospace;padding:20px;text-align:center;";
-  var steps=[
-    {icon:"🏰",title:"PROTEJA A BASE",desc:"Fernanda Towers está no final do caminho. Não deixe os inimigos chegarem até ela."},
-    {icon:"⚡",title:"COLOQUE TORRES",desc:"Toque nos tiles escuros fora do caminho. Use [1][2][3] ou os botões do painel."},
-    {icon:"🌊",title:"RESISTA ÀS ONDAS",desc:"Cada cerimônia tem ondas de inimigos. No mapa 7 enfrente a boss Amélia Pérez."}
-  ];
-  var current=0;
-  function render(){
-    var s=steps[current],dots="",d;
-    for(d=0;d<steps.length;d++){
-      dots+='<div style="width:'+(d===current?20:6)+'px;height:4px;background:'+(d===current?"#D4A017":"#2A2820")+';display:inline-block;margin:0 2px;border-radius:2px;"></div>';
+function showTutorial(onDone) {
+  var el = document.createElement("div");
+  el.id = "tutorial-overlay";
+  el.style.cssText = "position:fixed;inset:0;z-index:60;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(8,7,6,0.93);font-family:'Courier Prime',monospace;padding:20px;text-align:center;";
+  var steps = [{
+    icon: "🏰",
+    title: "PROTEJA A BASE",
+    desc: "Fernanda Towers está no final do caminho. Não deixe os inimigos chegarem até ela."
+  }, {
+    icon: "⚡",
+    title: "COLOQUE TORRES",
+    desc: "Toque nos tiles escuros fora do caminho. Use [1][2][3] ou os botões do painel."
+  }, {
+    icon: "🌊",
+    title: "RESISTA ÀS ONDAS",
+    desc: "Cada cerimônia tem ondas de inimigos. No mapa 7 enfrente a boss Amélia Pérez."
+  }];
+  var current = 0;
+  function render() {
+    var s = steps[current],
+      dots = "",
+      d;
+    for (d = 0; d < steps.length; d++) {
+      dots += '<div style="width:' + (d === current ? 20 : 6) + 'px;height:4px;background:' + (d === current ? "#D4A017" : "#2A2820") + ';display:inline-block;margin:0 2px;border-radius:2px;"></div>';
     }
-    var prevBtn="";
-    if(current>0){
-      prevBtn='<div style="font-size:9px;letter-spacing:.2em;color:#6A6560;border:1px solid #2A2820;padding:8px 16px;cursor:pointer;margin-right:8px;" onclick="document.getElementById(\'tutorial-overlay\')._prev()">← VOLTAR</div>';
+    var prevBtn = "";
+    if (current > 0) {
+      prevBtn = '<div style="font-size:9px;letter-spacing:.2em;color:#6A6560;border:1px solid #2A2820;padding:8px 16px;cursor:pointer;margin-right:8px;" onclick="document.getElementById(\'tutorial-overlay\')._prev()">← VOLTAR</div>';
     }
-    var nxt=current<steps.length-1?"PRÓXIMO →":"JOGAR ◆";
-    el.innerHTML=(
-      '<div style="font-size:9px;letter-spacing:.35em;text-transform:uppercase;color:#6A6560;margin-bottom:20px;">FERNANDA TOWERS · COMO JOGAR</div>'+
-      '<div style="font-size:48px;margin-bottom:12px;">'+s.icon+'</div>'+
-      '<div style="font-family:&apos;Bebas Neue&apos;,sans-serif;font-size:28px;color:#D4A017;letter-spacing:.15em;margin-bottom:10px;">'+s.title+'</div>'+
-      '<div style="font-size:12px;color:#9A9590;line-height:1.7;max-width:300px;">'+s.desc+'</div>'+
-      '<div style="display:flex;gap:4px;margin-top:24px;align-items:center;justify-content:center;">'+dots+'</div>'+
-      '<div style="margin-top:18px;display:flex;align-items:center;">'+prevBtn+
-      '<div style="font-size:9px;letter-spacing:.2em;color:#D4A017;border:1px solid #D4A017;padding:8px 22px;cursor:pointer;background:rgba(212,160,23,.07);" onclick="document.getElementById(\'tutorial-overlay\')._next()">'+nxt+'</div>'+
-      '</div>'
-    );
+    var nxt = current < steps.length - 1 ? "PRÓXIMO →" : "JOGAR ◆";
+    el.innerHTML = '<div style="font-size:9px;letter-spacing:.35em;text-transform:uppercase;color:#6A6560;margin-bottom:20px;">FERNANDA TOWERS · COMO JOGAR</div>' + '<div style="font-size:48px;margin-bottom:12px;">' + s.icon + '</div>' + '<div style="font-family:&apos;Bebas Neue&apos;,sans-serif;font-size:28px;color:#D4A017;letter-spacing:.15em;margin-bottom:10px;">' + s.title + '</div>' + '<div style="font-size:12px;color:#9A9590;line-height:1.7;max-width:300px;">' + s.desc + '</div>' + '<div style="display:flex;gap:4px;margin-top:24px;align-items:center;justify-content:center;">' + dots + '</div>' + '<div style="margin-top:18px;display:flex;align-items:center;">' + prevBtn + '<div style="font-size:9px;letter-spacing:.2em;color:#D4A017;border:1px solid #D4A017;padding:8px 22px;cursor:pointer;background:rgba(212,160,23,.07);" onclick="document.getElementById(\'tutorial-overlay\')._next()">' + nxt + '</div>' + '</div>';
   }
-  el._next=function(){if(current<steps.length-1){current++;render();}else{el.remove();onDone();}};
-  el._prev=function(){if(current>0){current--;render();}};
+  el._next = function () {
+    if (current < steps.length - 1) {
+      current++;
+      render();
+    } else {
+      el.remove();
+      onDone();
+    }
+  };
+  el._prev = function () {
+    if (current > 0) {
+      current--;
+      render();
+    }
+  };
   render();
   document.body.appendChild(el);
 }
 
 // ─── LIVES LOST FLASH ────────────────────────────────────
 function flashLivesLost() {
-  const el = document.createElement('div');
+  var el = document.createElement('div');
   el.style.cssText = 'position:fixed;inset:0;z-index:25;pointer-events:none;background:rgba(200,32,10,0.18);animation:flashRed .4s ease-out forwards;';
   document.body.appendChild(el);
-  setTimeout(() => el.remove(), 420);
+  setTimeout(function () {
+    return el.remove();
+  }, 420);
   if (!document.getElementById('flash-style')) {
-    const s = document.createElement('style');
+    var s = document.createElement('style');
     s.id = 'flash-style';
     s.textContent = '@keyframes flashRed{0%{opacity:1}100%{opacity:0}}';
     document.head.appendChild(s);
