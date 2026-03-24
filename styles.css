@@ -22,7 +22,7 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 .ms-title{font-size:10px;letter-spacing:.35em;text-transform:uppercase;color:var(--muted)}
 .ms-heading{font-family:'Bebas Neue',sans-serif;font-size:40px;color:var(--ink);letter-spacing:.08em;line-height:1}
 .ms-heading em{color:var(--gold);font-style:normal}
-.ms-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:10px;width:100%;max-width:1100px}
+.ms-grid{display:-webkit-flex;display:flex;-webkit-flex-wrap:wrap;flex-wrap:wrap;gap:10px;width:100%;max-width:1100px}.ms-card{width:calc(50% - 5px)}
 .ms-card{border:1px solid #2A2820;background:rgba(20,18,14,.9);padding:12px;cursor:pointer;transition:border-color .15s,transform .12s,background .15s;display:flex;flex-direction:column;gap:7px;position:relative;overflow:hidden}
 .ms-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--gold);transform:scaleX(0);transition:transform .2s;transform-origin:left}
 .ms-card:hover{border-color:var(--gold);transform:translateY(-2px);background:rgba(30,26,18,.95)}
