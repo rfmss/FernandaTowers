@@ -12,8 +12,6 @@
 <link rel="apple-touch-icon" href="icon.png">
 
 <title>FERNANDA TOWERS</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -91,8 +89,8 @@
     <div class="bb-name">AMÉLIA<br>PÉREZ</div>
     <div class="bb-sub">A favorita entrou em cena</div>
   </div>
-  <button id="snd-btn">🔇 som off</button>
-  <button id="music-btn" onclick="toggleMusic()" style="position:fixed;top:30px;left:50%;transform:translateX(-50%);z-index:15;font-size:7px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);background:none;border:none;cursor:pointer;padding:4px 8px;">🎵 música off</button>
+  <button id="snd-btn">SOM OFF</button>
+  <button id="music-btn" onclick="toggleMusic()" style="position:fixed;top:30px;left:50%;transform:translateX(-50%);z-index:15;font-size:7px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);background:none;border:none;cursor:pointer;padding:4px 8px;">MÚSICA OFF</button>
   <button id="btn-back">← mapas</button>
 </div>
   <script src="js/data.js"></script>
@@ -102,5 +100,12 @@
   <script src="js/render.js"></script>
   <script src="js/game.js"></script>
   <script src="js/ui.js"></script>
+<script>
+var BG = ['#b2c9c3','#c9bfb0','#b8c4ce','#c4bac9','#c9c4b0','#b8c9b8','#cec0b4'];
+document.body.style.backgroundColor = BG[Math.floor(Math.random() * BG.length)];
+if (!Object.values) { Object.values = function(o){return Object.keys(o).map(function(k){return o[k];});}; }
+if (!Array.prototype.find) { Array.prototype.find = function(fn){for(var i=0;i<this.length;i++){if(fn(this[i],i,this))return this[i];};}; }
+if (!Array.prototype.findIndex) { Array.prototype.findIndex = function(fn){for(var i=0;i<this.length;i++){if(fn(this[i],i,this))return i;}return -1;}; }
+</script>
 </body>
 </html>
